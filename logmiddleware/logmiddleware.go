@@ -37,61 +37,55 @@ type logResponseWriter struct {
 	statusCode int
 }
 
-func RequestLogger() func(next http.Handler) http.Handler {
-	lg := wlog.NewDefaultLogger()
+func RequestLogger(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		startTime := time.Now()
 
-	return RequestLoggerWithCustomLog(lg)
-}
+		correlationID := getCorrelationID(r)
 
-func RequestLoggerWithCustomLog(lg zerolog.Logger) func(next http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			startTime := time.Now()
+		ctx := context.WithValue(r.Context(), correlationIDField, correlationID)
 
-			correlationID := getCorrelationID(r)
+		r = r.WithContext(ctx)
 
-			ctx := context.WithValue(r.Context(), correlationIDField, correlationID)
+		lg := wlog.NewDefaultLogger()
 
-			r = r.WithContext(ctx)
+		lg.UpdateContext(func(c zerolog.Context) zerolog.Context {
+			return c.Str(correlationIDField, correlationID)
+		})
 
-			lg.UpdateContext(func(c zerolog.Context) zerolog.Context {
-				return c.Str(correlationIDField, correlationID)
-			})
+		w.Header().Add(correlationIDHeader, correlationID)
 
-			w.Header().Add(correlationIDHeader, correlationID)
+		lrw := newLoggingResponseWriter(w)
 
-			lrw := newLoggingResponseWriter(w)
+		r = r.WithContext(lg.WithContext(r.Context()))
 
-			r = r.WithContext(lg.WithContext(r.Context()))
+		defer func() {
+			panicVal := recover()
+			if panicVal != nil {
+				lrw.statusCode = http.StatusInternalServerError
+				panic(panicVal)
+			}
 
-			defer func() {
-				panicVal := recover()
-				if panicVal != nil {
-					lrw.statusCode = http.StatusInternalServerError
-					panic(panicVal)
-				}
+			logFields := buildRequestLogFields(r)
 
-				logFields := buildRequestLogFields(r)
+			elapsedTimeMS := time.Since(startTime) / time.Millisecond
 
-				elapsedTimeMS := time.Since(startTime) / time.Millisecond
-
-				(logFields[httpRequestField].(map[string]any))[elapsedTimeField] = elapsedTimeMS
-				(logFields[httpRequestField].(map[string]any))[statusCodeField] = lrw.statusCode
-
-				lg.
-					Info().
-					Fields(logFields).
-					Msg("Request returned")
-			}()
+			(logFields[httpRequestField].(map[string]any))[elapsedTimeField] = elapsedTimeMS
+			(logFields[httpRequestField].(map[string]any))[statusCodeField] = lrw.statusCode
 
 			lg.
 				Info().
-				Fields(buildRequestLogFields(r)).
-				Msg("Request received")
+				Fields(logFields).
+				Msg("Request returned")
+		}()
 
-			next.ServeHTTP(lrw, r)
-		})
-	}
+		lg.
+			Info().
+			Fields(buildRequestLogFields(r)).
+			Msg("Request received")
+
+		next.ServeHTTP(lrw, r)
+	})
 }
 
 func newLoggingResponseWriter(w http.ResponseWriter) *logResponseWriter {
