@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/rs/zerolog v1.30.0
-	github.com/wallacehenriquesilva/wlog v0.0.0-20230826185449-98def4ecfaf3
+	github.com/wallacehenriquesilva/wlog v0.0.1
 )
 
 require (

@@ -10,8 +10,8 @@ github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINE
 github.com/rs/xid v1.5.0/go.mod h1:trrq9SKmegXys3aeAKXMUTdJsYXVwGY3RLcfgqegfbg=
 github.com/rs/zerolog v1.30.0 h1:SymVODrcRsaRaSInD9yQtKbtWqwsfoPcRff/oRXLj4c=
 github.com/rs/zerolog v1.30.0/go.mod h1:/tk+P47gFdPXq4QYjvCmT5/Gsug2nagsFWBWhAiSi1w=
-github.com/wallacehenriquesilva/wlog v0.0.0-20230826185449-98def4ecfaf3 h1:64PagAehYgSe51TZb1ljepSRZ156Fx2CAkWqv5BJbUE=
-github.com/wallacehenriquesilva/wlog v0.0.0-20230826185449-98def4ecfaf3/go.mod h1:L+Ply+G+iMfz+u9LpdgkWkFXDYINwsqleElJghCko54=
+github.com/wallacehenriquesilva/wlog v0.0.1 h1:WH1cP8YUG6xVNWlKuzGt9qO26IN2Ag8fG+6TinWjYz0=
+github.com/wallacehenriquesilva/wlog v0.0.1/go.mod h1:L+Ply+G+iMfz+u9LpdgkWkFXDYINwsqleElJghCko54=
 golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6 h1:foEbQz/B0Oz6YIqu/69kfXPYeFQAuuMYFkjaqXzl5Wo=
 golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
